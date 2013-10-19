@@ -75,7 +75,7 @@ def remain2(a,n):
     for i in range(len(a)) :
         if a[i] < mn:
             a[i] = 0.0
-    mn = 0.999
+    mn = 0.95
     for i in range(len(a)) :
         if a[i] >= mn:
             a[i] += 2.0
