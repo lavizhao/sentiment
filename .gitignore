@@ -37,6 +37,6 @@ nosetests.xml
 
 *~
 *.csv
-topic*
+topic_*
 class.topic
 doc-topic.txt
