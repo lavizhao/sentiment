@@ -95,6 +95,9 @@ def remain3(a,n):
         elif a[i] >0.9:
             a[i] = 1
 
+    if np.sum(a) < 1:
+        a = a/np.sum(a)
+
     return a
 
 if __name__ == "__main__":
