@@ -44,26 +44,10 @@ def read_csv():
     return train,label,test,ans
 
 def remain(a,n):
-    a = a - 0.01
-    ind = range(len(a))
-    ind.sort(lambda x,y:cmp(a[x],a[y]))
 
-    mn = 0.001
-    for i in range(len(a)) :
-        if a[i] < mn:
-            a[i] = 0.0
-    mn = 0.999
-    for i in range(len(a)) :
-        if a[i] >= mn:
-            a[i] += 0.9
-
-    for i in range(n):
-        a[ind[i]] = 0
-
-    a = a + abs(a.min())
-    a = 1.0*a/np.sum(a)
+    a = np.exp(a)
     
-
+    a = a/np.sum(a)
     return a 
 
 def remain2(a,n):
@@ -75,7 +59,7 @@ def remain2(a,n):
     for i in range(len(a)) :
         if a[i] < mn:
             a[i] = 0.0
-    mn = 0.95
+    mn = 0.99
     for i in range(len(a)) :
         if a[i] >= mn:
             a[i] += 2.0
@@ -173,7 +157,7 @@ if __name__ == "__main__":
         ts,tw,tk = s[i],w[i],k[i]
 
         ts = remain(ts,0)
-        tw = remain(tw,0)
+        tw = remain2(tw,0)
         tk = remain3(tk,13)
 
         str_s = [str(j) for j in ts]
