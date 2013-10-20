@@ -49,10 +49,6 @@ def remain(a,n):
     for i in range(len(a)) :
         if a[i] < mn:
             a[i] = 0.0
-    mn = 0.99
-    for i in range(len(a)) :
-        if a[i] >= mn:
-            a[i] += 2.0
 
     for i in range(n):
         a[ind[i]] = 0
@@ -72,10 +68,7 @@ def remain2(a,n):
     for i in range(len(a)) :
         if a[i] < mn:
             a[i] = 0.0
-    mn = 0.99
-    for i in range(len(a)) :
-        if a[i] >= mn:
-            a[i] += 2.0
+
 
     for i in range(n):
         a[ind[i]] = 0
@@ -134,7 +127,7 @@ if __name__ == "__main__":
 
     for i in range(n):
         print "第%s个"%(i)
-        clf = linear_model.Ridge(alpha=2.3,fit_intercept=True,normalize=True,tol=1e-9)
+        clf = linear_model.Ridge(alpha=2,fit_intercept=True,normalize=True,tol=1e-9)
         #clf = linear_model.Lasso(alpha = 0.1)
         #clf = linear_model.ElasticNet(alpha=100,l1_ratio=0.96)
 
