@@ -52,10 +52,10 @@ def remain(a,n):
     for i in range(len(a)) :
         if a[i] < mn:
             a[i] = 0.0
-    mn = 0.999
+    mn = 0.98
     for i in range(len(a)) :
         if a[i] >= mn:
-            a[i] += 0.9
+            a[i] += 2.0
 
     for i in range(n):
         a[ind[i]] = 0
