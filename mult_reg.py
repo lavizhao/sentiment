@@ -5,6 +5,7 @@
 
 import csv
 import numpy as np
+from scipy import sparse
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import linear_model
 from sklearn import cross_validation
@@ -37,7 +38,7 @@ def read_csv():
             a = a + 1
         else:
             ans.append(int(row[0]))
-            test.append(row[1])
+            test.append(row[1]+" "+row[2]+" "+row[3])
     f.close()
 
     return train,label,test,ans
@@ -52,10 +53,14 @@ def remain(a,n):
     for i in range(n):
         a[ind[i]] = 0
 
+    mn = 0.999
+    for i in range(len(a)) :
+        if a[i] >= mn:
+            a[i] += 0.9
+
     a = a + abs(a.min())
     a = 1.0*a/np.sum(a)
     
-    a = a/np.sum(a)
     return a 
 
 def remain2(a,n):
@@ -68,6 +73,10 @@ def remain2(a,n):
         if a[i] < mn:
             a[i] = 0.0
 
+    mn = 0.999
+    for i in range(len(a)) :
+        if a[i] >= mn:
+            a[i] += 0.9
 
     for i in range(n):
         a[ind[i]] = 0
@@ -89,19 +98,52 @@ def remain3(a,n):
 
     return a
 
+def readv():
+    """
+    """
+    f = open("corpus/sent.txt")
+    vocab = {}
+    
+    a = 0
+    for line in f.readlines():
+        if vocab.has_key(line.strip()):
+            pass
+        else:
+            vocab[line.strip()] = a
+            a += 1
+    return vocab
+    
 if __name__ == "__main__":
 
     print "读文件"
     train,label,test,ans = read_csv()
 
+    print "读情感词表"
+    vocab = readv()
+    
+
     vectorizer = TfidfVectorizer(max_features=None,min_df=10,max_df=1.0,sublinear_tf=True,ngram_range=(1,2),smooth_idf=True,token_pattern=r'\w{1,}',analyzer='word',strip_accents='unicode',use_idf=True,binary=False)
+
+    sent_vectorizer = TfidfVectorizer(max_features=None,min_df=1,max_df=1.0,sublinear_tf=True,ngram_range=(1,1),smooth_idf=True,token_pattern=r'\w{1,}',analyzer='word',strip_accents='unicode',use_idf=False,binary=True,vocabulary=vocab)
 
     length_train = len(train)
     x_all = train + test
     print "转化成tf-idf矩阵"
     x_all = vectorizer.fit_transform(x_all)
+
     x = x_all[:length_train]
     t = x_all[length_train:]
+
+    print "转化情感词表"
+    sent_x_all = train + test
+    sent_x_all = sent_vectorizer.fit_transform(sent_x_all)
+    sent_x  = sent_x_all[:length_train]
+    sent_t = sent_x_all[length_train:]
+
+    print "合并"
+
+    x = sparse.hstack((x,sent_x)).tocsr()
+    t = sparse.hstack((t,sent_t)).tocsr()
 
     label = np.array(label)
 
@@ -112,11 +154,8 @@ if __name__ == "__main__":
 
     print "x shape",x.shape
     print "t shape",t.shape
-    print x[0]
-    
 
     #构造结果的矩阵
-    answer = []
     
     clf = linear_model.Ridge(alpha=2,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
     clf1 = linear_model.Ridge(alpha=2,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
@@ -142,11 +181,6 @@ if __name__ == "__main__":
     clf2.fit(x,k)
     k_answer = clf2.predict(t)
     print np.mean(cross_validation.cross_val_score(clf2,x,k,cv=2,scoring='mean_squared_error',n_jobs=2))
-
-    answer = np.array(answer)
-    answer = answer.T
-    
-    print answer.shape
 
     print "写入文件"
     head = "id,s1,s2,s3,s4,s5,w1,w2,w3,w4,k1,k2,k3,k4,k5,k6,k7,k8,k9,k10,k11,k12,k13,k14,k15"
