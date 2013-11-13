@@ -53,13 +53,13 @@ def remain(a,n):
     for i in range(n):
         a[ind[i]] = 0
 
-    mn = 0.999
+    mn = 1
     for i in range(len(a)) :
         if a[i] >= mn:
-            a[i] += 0.9
+            a[i] = 1
 
-    a = a + abs(a.min())
-    a = 1.0*a/np.sum(a)
+    #a = a + abs(a.min())
+    #a = 1.0*a/np.sum(a)
     
     return a 
 
@@ -73,16 +73,13 @@ def remain2(a,n):
         if a[i] < mn:
             a[i] = 0.0
 
-    mn = 0.999
+    mn = 1
     for i in range(len(a)) :
         if a[i] >= mn:
-            a[i] += 0.9
+            a[i] = 1
 
-    for i in range(n):
-        a[ind[i]] = 0
-
-    a = a + abs(a.min())
-    a = 1.0*a/np.sum(a)
+    #a = a + abs(a.min())
+    #a = 1.0*a/np.sum(a)
 
     return a
 
@@ -142,8 +139,8 @@ if __name__ == "__main__":
 
     print "合并"
 
-    x = sparse.hstack((x,sent_x)).tocsr()
-    t = sparse.hstack((t,sent_t)).tocsr()
+    #x = sparse.hstack((x,sent_x)).tocsr()
+    #t = sparse.hstack((t,sent_t)).tocsr()
 
     label = np.array(label)
 
@@ -168,8 +165,8 @@ if __name__ == "__main__":
     print "开始回归"
 
     print "do s"
-    clf.fit(x,s)
-    s_answer = clf.predict(t)
+    clf.fit(sent_x,s)
+    s_answer = clf.predict(sent_t)
     print np.mean(cross_validation.cross_val_score(clf,x,s,cv=2,scoring='mean_squared_error',n_jobs=2))
 
     print "do w"
