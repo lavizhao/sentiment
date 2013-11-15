@@ -155,7 +155,7 @@ if __name__ == "__main__":
     #构造结果的矩阵
     
     clf = linear_model.Ridge(alpha=2,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
-    clf1 = linear_model.Ridge(alpha=2,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
+    clf1 = linear_model.Ridge(alpha=0.01,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
     clf2 = linear_model.Ridge(alpha=2,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
     
     s = label[:,0:5]
@@ -164,32 +164,32 @@ if __name__ == "__main__":
     
     print "开始回归"
 
-    print "do s"
-    clf.fit(sent_x,s)
-    s_answer = clf.predict(sent_t)
-    print np.mean(cross_validation.cross_val_score(clf,x,s,cv=2,scoring='mean_squared_error',n_jobs=2))
+    clf.fit(x,label)
+    train_x = clf.predict(x)
+    train_t = clf.predict(t)
+    print np.mean(cross_validation.cross_val_score(clf,x,label,cv=2,scoring='mean_squared_error',n_jobs=2))
 
-    print "do w"
-    clf1.fit(x,w)
-    w_answer = clf1.predict(t)
-    print np.mean(cross_validation.cross_val_score(clf1,x,w,cv=2,scoring='mean_squared_error',n_jobs=2))
+    print "开始二次回归"
 
-    print "do k"
-    clf2.fit(x,k)
-    k_answer = clf2.predict(t)
-    print np.mean(cross_validation.cross_val_score(clf2,x,k,cv=2,scoring='mean_squared_error',n_jobs=2))
+    clf1.fit(train_x,label)
+    answer = clf1.predict(train_t)
+    print np.mean(cross_validation.cross_val_score(clf1,train_x,label,cv=2,scoring='mean_squared_error',n_jobs=2))
 
-    print "写入文件"
+    s = answer[:,0:5]
+    w = answer[:,5:9]
+    k = answer[:,9:24]
+    
+    
     head = "id,s1,s2,s3,s4,s5,w1,w2,w3,w4,k1,k2,k3,k4,k5,k6,k7,k8,k9,k10,k11,k12,k13,k14,k15"
     
     f = open("ans_regression1.csv","w")
     f.write(head+"\n")
 
     for i in xrange(len(test)):
-        ts,tw,tk = s_answer[i],w_answer[i],k_answer[i]
+        ts,tw,tk = s[i],w[i],k[i]
 
-        ts = remain(ts,0)
-        tw = remain2(tw,0)
+        #ts = remain(ts,0)
+        #tw = remain2(tw,0)
         tk = remain3(tk,13)
 
         str_s = [str(j) for j in ts]
