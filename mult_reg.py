@@ -50,8 +50,8 @@ def remain(a,n):
         if a[i] < mn:
             a[i] = 0.0
 
-    for i in range(n):
-        a[ind[i]] = 0
+    #for i in range(n):
+    #    a[ind[i]] = 0
 
     mn = 1
     for i in range(len(a)) :
@@ -60,6 +60,8 @@ def remain(a,n):
 
     #a = a + abs(a.min())
     #a = 1.0*a/np.sum(a)
+    if np.sum(a) < 1:
+        a = 1.0*a/np.sum(a)
     
     return a 
 
@@ -79,7 +81,8 @@ def remain2(a,n):
             a[i] = 1
 
     #a = a + abs(a.min())
-    #a = 1.0*a/np.sum(a)
+    if np.sum(a) < 1 :
+        a = 1.0*a/np.sum(a)
 
     return a
 
@@ -155,7 +158,7 @@ if __name__ == "__main__":
     #构造结果的矩阵
     
     clf = linear_model.Ridge(alpha=2,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
-    clf1 = linear_model.Ridge(alpha=0.01,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
+    clf1 = linear_model.Ridge(alpha=0.05,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
     clf2 = linear_model.Ridge(alpha=2,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
     
     s = label[:,0:5]
@@ -188,8 +191,8 @@ if __name__ == "__main__":
     for i in xrange(len(test)):
         ts,tw,tk = s[i],w[i],k[i]
 
-        #ts = remain(ts,0)
-        #tw = remain2(tw,0)
+        ts = remain(ts,0)
+        tw = remain2(tw,0)
         tk = remain3(tk,13)
 
         str_s = [str(j) for j in ts]
