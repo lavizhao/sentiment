@@ -127,10 +127,33 @@ def remain3(a,n):
 
     return a
 
+def readtopic():
+    """
+    """
+    train,test = [],[]
+
+    print "读topic"
+    f1 = open("topic_train.txt")
+    for line in f1.readlines():
+        sp = line.split()
+        sp = [float(j) for j in sp]
+
+        train.append(sp)
+
+    f2 = open("topic_test.txt")
+    for line in f2.readlines():
+        sp = line.split()
+        sp = [float(j) for j in sp]
+
+        test.append(sp)
+    return train,test
+    
 if __name__ == "__main__":
 
     print "读文件"
     train,label,test,ans,etrain,etest = read_csv()
+    print "读主题"
+    topic_train,topic_test = readtopic()
 
     #vectorizer = TfidfVectorizer(max_features=None,min_df=3,max_df=1.0,sublinear_tf=True,ngram_range=(1,2),smooth_idf=True,token_pattern=r'\w{1,}',analyzer='word',strip_accents='unicode',use_idf=False,binary=True)
     vectorizer = TfidfVectorizer(max_features=None,min_df=10,max_df=1.0,sublinear_tf=True,ngram_range=(1,2),smooth_idf=True,token_pattern=r'\w{1,}',analyzer='word',strip_accents='unicode',use_idf=True,binary=False)
@@ -154,8 +177,8 @@ if __name__ == "__main__":
     print "t shape",t.shape
     
     print "合并"
-    x = sparse.hstack((x,etrain)).tocsr()
-    t = sparse.hstack((t,etest)).tocsr()
+    x = sparse.hstack((x,etrain,topic_train)).tocsr()
+    t = sparse.hstack((t,etest,topic_test)).tocsr()
 
     print "x shape",x.shape
     print "t shape",t.shape

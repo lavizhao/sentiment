@@ -26,8 +26,8 @@ if __name__ == "__main__":
     t1 = open("topic_train.txt","w")
     t2 = open("topic_test.txt","w")
 
-    topic_num = 200
-    topic_num1 = topic_num*2
+    topic_num = 100
+    topic_num1 = topic_num
     
     for line in train:
         sp = line.split('\t')

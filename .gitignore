@@ -40,3 +40,5 @@ nosetests.xml
 topic_*
 class.topic
 doc-topic.txt
+shabi.txt
+total.txt

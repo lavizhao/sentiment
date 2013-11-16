@@ -20,7 +20,7 @@ echo 读取数据完成
 
 echo 开始建立topic文件
 
-./bin/mallet train-topics --input topic-input.mallet --optimize-interval 10 --optimize-burn-in 30 --num-topics 200 --num-iterations 900 --output-state topic-state.gz --output-doc-topics ~/kaggle/sentiment/class.topic --output-model ~/kaggle/sentiment/shabi.txt
+./bin/mallet train-topics --input topic-input.mallet --optimize-interval 10 --optimize-burn-in 30 --num-topics 100 --num-iterations 900 --output-state topic-state.gz --output-doc-topics ~/kaggle/sentiment/class.topic --output-model ~/kaggle/sentiment/shabi.txt
 
 echo topic文件建立完毕
 
