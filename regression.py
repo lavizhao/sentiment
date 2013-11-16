@@ -9,13 +9,48 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import linear_model
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.svm import SVR
+from scipy import sparse
 
+def ct(sent,sym):
+    if sent.count(sym)!=0:
+        return 1
+    else:
+        return 0
+
+def find_rules(sent):
+    """
+    """
+    tcount = []
+    
+    tcount.append(ct(sent,"!"))
+    tcount.append(ct(sent,":)"))
+    tcount.append(ct(sent,":("))
+    tcount.append(ct(sent,"#"))
+    tcount.append(ct(sent,"was"))
+    tcount.append(ct(sent,"!"))
+    tcount.append(ct(sent,":-]"))
+    tcount.append(ct(sent,"%"))
+    tcount.append(ct(sent,"=_="))
+    tcount.append(ct(sent,"(:"))
+    tcount.append(ct(sent,"?"))
+    tcount.append(ct(sent,":D"))
+    tcount.append(ct(sent,"tommoro"))
+    tcount.append(1.0*len(sent)/100)
+    tcount.append(ct(sent,":"))
+    tcount.append(ct(sent,"{link}"))
+    tcount.append(ct(sent,";)"))
+    tcount.append(ct(sent,"="))
+    tcount.append(ct(sent,":-P"))
+    return tcount
 
 def read_csv():
     f = open("train.csv","U")
     reader = csv.reader(f)
     
     train,label = [],[]
+
+    etrain = []
+    etest = []
 
     a = 0
     for row in reader:
@@ -26,6 +61,7 @@ def read_csv():
             sub_row = row[4:]
             sub_row = [float(i) for i in sub_row]
             label.append(sub_row)
+            etrain.append(find_rules(row[1]))
     f.close()
 
     f = open("test.csv","U")
@@ -39,9 +75,10 @@ def read_csv():
         else:
             ans.append(int(row[0]))
             test.append(row[1])
+            etest.append(find_rules(row[1]))
     f.close()
 
-    return train,label,test,ans
+    return train,label,test,ans,etrain,etest
 
 def remain(a,n):
 
@@ -93,7 +130,7 @@ def remain3(a,n):
 if __name__ == "__main__":
 
     print "读文件"
-    train,label,test,ans = read_csv()
+    train,label,test,ans,etrain,etest = read_csv()
 
     #vectorizer = TfidfVectorizer(max_features=None,min_df=3,max_df=1.0,sublinear_tf=True,ngram_range=(1,2),smooth_idf=True,token_pattern=r'\w{1,}',analyzer='word',strip_accents='unicode',use_idf=False,binary=True)
     vectorizer = TfidfVectorizer(max_features=None,min_df=10,max_df=1.0,sublinear_tf=True,ngram_range=(1,2),smooth_idf=True,token_pattern=r'\w{1,}',analyzer='word',strip_accents='unicode',use_idf=True,binary=False)
@@ -115,7 +152,13 @@ if __name__ == "__main__":
 
     print "x shape",x.shape
     print "t shape",t.shape
-    print x[0]
+    
+    print "合并"
+    x = sparse.hstack((x,etrain)).tocsr()
+    t = sparse.hstack((t,etest)).tocsr()
+
+    print "x shape",x.shape
+    print "t shape",t.shape
     
 
     #构造结果的矩阵
@@ -146,6 +189,7 @@ if __name__ == "__main__":
     w = answer[:,5:9]
     k = answer[:,9:24]
 
+    print "s shape",s.shape
     print "w shape",w.shape
     print "k shpae",k.shape
 

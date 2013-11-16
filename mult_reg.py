@@ -11,6 +11,40 @@ from sklearn import linear_model
 from sklearn import cross_validation
 
 
+def ct(sent,sym):
+    if sent.count(sym)!=0:
+        return 1
+    else:
+        return 0
+
+def find_rules(sent):
+    """
+    """
+    tcount = []
+    
+    tcount.append(ct(sent,"!"))
+    tcount.append(ct(sent,":)"))
+    tcount.append(ct(sent,":("))
+    tcount.append(ct(sent,"#"))
+    tcount.append(ct(sent,"was"))
+    tcount.append(ct(sent,"!"))
+    tcount.append(ct(sent,":-]"))
+    tcount.append(ct(sent,"%"))
+    tcount.append(ct(sent,"=_="))
+    tcount.append(ct(sent,"(:"))
+    tcount.append(ct(sent,"?"))
+    tcount.append(ct(sent,":D"))
+    tcount.append(ct(sent,"tommoro"))
+    tcount.append(1.0*len(sent)/100)
+    tcount.append(ct(sent,":"))
+    tcount.append(ct(sent,"{link}"))
+    tcount.append(ct(sent,";)"))
+    tcount.append(ct(sent,"="))
+    tcount.append(ct(sent,":-P"))
+    return tcount
+
+    
+
 def read_csv():
     f = open("train.csv","U")
     reader = csv.reader(f)
@@ -18,6 +52,8 @@ def read_csv():
     train,label = [],[]
 
     a = 0
+    etrain = []
+    etest = []
     for row in reader:
         if a == 0:
             a = a + 1
@@ -26,6 +62,7 @@ def read_csv():
             sub_row = row[4:]
             sub_row = [float(i) for i in sub_row]
             label.append(sub_row)
+            etrain.append(find_rules(row[1]))
     f.close()
 
     f = open("test.csv","U")
@@ -39,9 +76,10 @@ def read_csv():
         else:
             ans.append(int(row[0]))
             test.append(row[1]+" "+row[2]+" "+row[3])
+            etest.append(find_rules(row[1]))
     f.close()
 
-    return train,label,test,ans
+    return train,label,test,ans,etrain,etest
 
 def remain(a,n):
 
@@ -116,7 +154,7 @@ def readv():
 if __name__ == "__main__":
 
     print "读文件"
-    train,label,test,ans = read_csv()
+    train,label,test,ans,etrain,etest = read_csv()
 
     print "读情感词表"
     vocab = readv()
@@ -142,8 +180,8 @@ if __name__ == "__main__":
 
     print "合并"
 
-    #x = sparse.hstack((x,sent_x)).tocsr()
-    #t = sparse.hstack((t,sent_t)).tocsr()
+    x = sparse.hstack((x,sent_x)).tocsr()
+    t = sparse.hstack((t,sent_t)).tocsr()
 
     label = np.array(label)
 
@@ -158,7 +196,7 @@ if __name__ == "__main__":
     #构造结果的矩阵
     
     clf = linear_model.Ridge(alpha=2,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
-    clf1 = linear_model.Ridge(alpha=0.05,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
+    clf1 = linear_model.Ridge(alpha=0.001,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
     clf2 = linear_model.Ridge(alpha=2,fit_intercept=True,normalize=True,tol=1e-9,solver='auto')
     
     s = label[:,0:5]
@@ -171,6 +209,18 @@ if __name__ == "__main__":
     train_x = clf.predict(x)
     train_t = clf.predict(t)
     print np.mean(cross_validation.cross_val_score(clf,x,label,cv=2,scoring='mean_squared_error',n_jobs=2))
+
+    #print "开始训练情感词表"
+    #clf.fit(sent_x,label)
+    #train_x1 = clf.predict(sent_x)
+    #train_t1 = clf.predict(sent_t)
+    #print np.mean(cross_validation.cross_val_score(clf,sent_x,label,cv=2,scoring='mean_squared_error',n_jobs=2))
+
+    #print "type",type(train_x1)
+
+    #print "开始融合"
+    train_x = np.hstack((train_x,etrain))
+    train_t = np.hstack((train_t,etest))
 
     print "开始二次回归"
 
