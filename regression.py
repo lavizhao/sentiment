@@ -190,14 +190,10 @@ if __name__ == "__main__":
     
 
     print "开始回归"
-
+    clf = linear_model.Ridge(alpha=1.5,fit_intercept=True,normalize=True,tol=1e-9)
+    
     for i in range(n):
         print "第%s个"%(i)
-        clf = linear_model.Ridge(alpha=1.9,fit_intercept=True,normalize=True,tol=1e-9)
-        #clf = linear_model.Lasso(alpha = 0.1)
-        #clf = linear_model.ElasticNet(alpha=100,l1_ratio=0.96)
-
-
         clf.fit(x,label[:,i])
         temp_answer = clf.predict(t)
         answer.append(temp_answer)
