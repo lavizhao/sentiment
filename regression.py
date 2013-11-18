@@ -190,7 +190,7 @@ if __name__ == "__main__":
     
 
     print "开始回归"
-    clf = linear_model.Ridge(alpha=1.5,fit_intercept=True,normalize=True,tol=1e-9)
+    clf = linear_model.Ridge(alpha=1.2,fit_intercept=True,normalize=True,tol=1e-9)
     
     for i in range(n):
         print "第%s个"%(i)
